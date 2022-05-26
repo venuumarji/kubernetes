@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-tomcat
+spec:
+  replicas: 8
+  selector: 
+    matchLabels:
+      app: deploy
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 2
+          maxUnavailable: 0
+      template:
+        metadata:
+          labels:
+            app: deploy
+        spec:
+          containers:
+            - name: deploy-tomcat
+              image: cgdoc12/1.0:35
+            resources:
+              limits:
+                cpu: "1"
+                memory: 256Mi
+              requests:
+                cpu: 500m
+                memory: 128Mi
+---                 
+apiVersion: v1
+kind: Service
+metadata: 
+  name: deploy
+spec:
+  type: NodePort
+  selector:
+    app: deploy
+  ports:
+    - port: 8085
+      targetPort: 8080
+      nodePort: 30003
