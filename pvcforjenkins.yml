@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: jenkins-home-claim
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-ebs-gp2"
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 10Gi
