@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-tomcat
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+    app: deploy-tomcat
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: deploy-tomcat
+    spec:
+      containers:
+        - name: deploy-tomcat
+          image: cgdoc12/1.0:35
+          volumeMounts:
+            - name: mysecret
+              mountPath: /usr/local/tomcat/webapps/
+      volumes:                                              
+        - name: myvolume
+          secret:
+            secretName: mysecret
+        - name: mysecret
+          configMap:
+            name: myfile
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: deploy-tomcat
+spec:
+  type: NodePort
+  selector:
+    app: deploy-tomcat
+  ports:
+    - port: 8088
+      targetPort: 8080
+      nodePort: 30008
