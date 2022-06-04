@@ -1,25 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deploy-j
+  name: jenkins-deploy
 spec:
-  replicas: 4 
+  replicas: 2 
   selector: 
     matchLabels:
-      app: deploy-j
+      app: jenkins-deploy
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 2
+      maxSurge: 2 
       maxUnavailable: 0
   template:
     metadata:
       labels:
-        app: deploy-j
+        app: jenkins-deploy
     spec:
       containers:
-      - name: deploy
+      - name: jenkins-deploy
         image: jenkins/jenkins:lts
+        env: 
+        - name: JENKINS_OPTS        
+          value: "--prefix=/jenkins"
         securityContext:
           allowPrivilegeEscalation: true
           privileged: true
@@ -32,3 +35,5 @@ spec:
         - name: jenkinsvolume
           persistentVolumeClaim:
             claimName: jenkins-home-claim
+
+
